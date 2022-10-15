@@ -673,7 +673,7 @@ async function extractDataOfWelnessForever(medname) {
 async function extractDataOfPracto(urlForPracto) {
     try {
         // Fetching HTML
-        const browser1= await puppeteer.launch({
+        const browser= await puppeteer.launch({
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -681,13 +681,13 @@ async function extractDataOfPracto(urlForPracto) {
         });;
 
         console.log("name->"+nameOfMed)
-    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${nameOfMed}&ad=dirN&o=0`);
+    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${nameOfMed}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
-    const page2 = await browser1.newPage();
-    await page2.goto(urlForDhani, { waitUntil: 'networkidle2' });
+    const page2 = await browser.newPage();
+    await page2.goto(urlForPracto, { waitUntil: 'networkidle2' });
     var data= await page2.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser1.close();
+    await browser.close();
     //    console.log(typeof(final.datafordhani));
         const $ = cheerio.load(data);
       
