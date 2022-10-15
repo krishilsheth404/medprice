@@ -823,7 +823,7 @@ app.post('/result', async (req, res) => {
                 final.push(nameOfMed);
               
                 console.log('Found Everything Sir!..')
-                res.render('secondFinal', { final: final });
+                res.render('final', { final: final });
 
 
          // getData(item);
