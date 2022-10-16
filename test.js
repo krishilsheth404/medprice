@@ -585,7 +585,7 @@ async function extractDataOfmedplusmartOg(medname) {
             item: $('.composition-details h1').text().trim(),
             price: a,
             imgLink: imgUrl,
-            link: urlFormedplusMartOg,
+            link: '',
         }
 
     } catch (error) {
@@ -624,7 +624,7 @@ async function extractDataOfDhani(medname) {
             item: $('.product-name ').text().trim(),
             price: $('.price-area-txt--existing').text(),
             imgLink: imgUrl,
-            link: urlForDhani,
+            link: '',
         }
 
     } catch (error) {
@@ -657,7 +657,7 @@ async function extractDataOfWelnessForever(medname) {
             item: $('.prdName').text().trim(),
             price: $('.infoPrice').text(),
             imgLink: imgUrl,
-            link: urlForWelnessForever,
+            link: '',
         }
 
     } catch (error) {
@@ -692,7 +692,7 @@ async function extractDataOfPracto(medname) {
             item: $('.heading-alpha').text().trim(),
             price: $('.heading-beta-bold').text(),
             imgLink: imgUrl,
-            link: urlForPracto,
+            link: '',
         }
 
     } catch (error) {
@@ -757,12 +757,11 @@ extractSubsfApollo = async (url,final) => {
         return error;
     }
 };
-const final=[];
+const final=[],nameOfMed=[];
 app.post('/result', async (req, res) => {
     // Insert Login Code Here
      
-const final = [];
-    var nameOfMed=req.body.foodItem;
+    nameOfMed.push(req.body.foodItem);
     // const city = req.body.city + '\n';
     const linkForSubs=[];
 
@@ -839,11 +838,14 @@ const final = [];
 app.post('/final', async (req, res) => {
     // Insert Login Code Here
     // Insert Login Code Here
+    // console.log(final.named)
+    console.log(req.body.foodItem)
 
-    const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${medname}&ad=dirN&o=0`);
-    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`);
-    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`);
-    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`);
+    var medname="dolo";
+    const urlFormedplusMartOg =`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${medname}&ad=dirN&o=0`;
+    const urlForDhani = `https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`;
+    const urlForWelnessForever = `https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`;
+    const urlForPracto =`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`;
    
 
 
@@ -894,7 +896,7 @@ app.post('/final', async (req, res) => {
 })
 
 
-const port = process.env.PORT || 5000 // Port we will listen on
+const port = process.env.PORT || 1000 // Port we will listen on
 
 // Function to listen on the port
 app.listen(port, () => console.log(`This app is listening on port ${port}`));
