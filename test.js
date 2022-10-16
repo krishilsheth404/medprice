@@ -545,7 +545,7 @@ async function extractDataOfmedplusmartOg(medname) {
         // Fetching HTML
         console.log('url:'+medname);
       
-        const browser= await puppeteer.launch({
+        const browser3= await puppeteer.launch({
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -558,10 +558,10 @@ async function extractDataOfmedplusmartOg(medname) {
         // console.log(data)
         // await page.close();
         // Using cheerio to extract <a> tags
-        const page1 = await browser.newPage();
-        await page1.goto(urlFormedplusMartOg, { waitUntil: 'networkidle2' });
-        var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
-        await browser.close();
+        const page3 = await browser3.newPage();
+        await page3.goto(urlFormedplusMartOg, { waitUntil: 'networkidle2' });
+        var data= await page3.evaluate(() => document.querySelector('*').outerHTML); +"";
+        await browser3.close();
 
         const $ = cheerio.load(data);
         var a = $('.mrp-details-div h2').text().trim();
@@ -607,9 +607,9 @@ async function extractDataOfDhani(medname) {
     const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
-    const page1 = await browser.newPage();
-    await page1.goto(urlForDhani, { waitUntil: 'networkidle2' });
-    var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
+    const page = await browser.newPage();
+    await page.goto(urlForDhani, { waitUntil: 'networkidle2' });
+    var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
     await browser.close();
     //    console.log(typeof(final.datafordhani));
         const $ = cheerio.load(data);
@@ -639,17 +639,17 @@ async function extractDataOfDhani(medname) {
 async function extractDataOfWelnessForever(medname) {
     try {
         // Fetching HTML
-        const browser= await puppeteer.launch({
+        const browser1= await puppeteer.launch({
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
             ]
         });;
     const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`);
-    const page1 = await browser.newPage();
+    const page1 = await browser1.newPage();
     await page1.goto(urlForWelnessForever, { waitUntil: 'networkidle2' });
     var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser.close();
+    await browser1.close();
     //    console.log(typeof(final.datafordhani));
         const $ = cheerio.load(data);
       
@@ -672,7 +672,7 @@ async function extractDataOfWelnessForever(medname) {
 async function extractDataOfPracto(medname) {
     try {
         // Fetching HTML
-        const browser= await puppeteer.launch({
+        const browser2= await puppeteer.launch({
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -683,10 +683,10 @@ async function extractDataOfPracto(medname) {
     const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
-    const page2 = await browser.newPage();
+    const page2 = await browser2.newPage();
     await page2.goto(urlForPracto, { waitUntil: 'networkidle2' });
     var data= await page2.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser.close();
+    await browser2.close();
     //    console.log(typeof(final.datafordhani));
         const $ = cheerio.load(data);
       
