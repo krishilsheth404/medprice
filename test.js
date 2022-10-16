@@ -883,21 +883,12 @@ app.post('/final', async (req, res) => {
         
                 }))
 
-    await axios.all([extractDataOfDhani("dolo"),extractDataOfPracto("dolo"),extractDataOfWelnessForever("dolo"),extractDataOfmedplusmartOg("dolo")])
-        .then(await axios.spread(async (...responses) => {
-            // console.log(...responses);
-
-            final.push(responses[0])
-            final.push(responses[1])
-            final.push(responses[2])
-            final.push(responses[3])
-           
-            // await extractSubsfApollo(final[final.length-1].link,final);
-
-        }))
-        ;
-        // nameOfMed.pop();
     
+                final.push({named:req.body.foodItem});
+                console.log(final)
+              
+                console.log('Found Everything Sir!..')
+
     res.render('secondFinal', { final: final });
 
 })
