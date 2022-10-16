@@ -11,6 +11,7 @@ const fs = require('fs');
 const ejs = require("ejs");
 const { AddressContext } = require('twilio/lib/rest/api/v2010/account/address');
 const { getElementsByTagType } = require('domutils');
+const { url } = require('inspector');
 // var urlForSwiggy, urlForZomato;
 // var extractLinksOfSwiggy, extractLinksOfZomato, matchedDishes = {};
 // var matchedDishesForSwiggy, matchedDishesForZomato, tempAddress, discCodesForZomato, addr, linkOld = '';
@@ -537,13 +538,12 @@ extractDataOfIndiMedo = async (url) => {
 
 
 
-const nameOfMed = [], final = [];
 
 
 async function extractDataOfmedplusmartOg(medname) {
     try {
         // Fetching HTML
-        console.log('url:'+nameOfMed);
+        console.log('url:'+medname);
       
         const browser= await puppeteer.launch({
             args: [
@@ -552,7 +552,7 @@ async function extractDataOfmedplusmartOg(medname) {
             ]
         });;
     
-        const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${nameOfMed}&ad=dirN&o=0`);
+        const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${medname}&ad=dirN&o=0`);
         console.log(urlFormedplusMartOg)
         // await browser.close();
         // console.log(data)
@@ -582,7 +582,6 @@ async function extractDataOfmedplusmartOg(medname) {
             imgUrl = imgUrl.split('")')[0];
         }
     }
-        var url="";
         return {
             name: 'MedPlusMart',
             item: $('.composition-details h1').text().trim(),
@@ -605,7 +604,7 @@ async function extractDataOfDhani(medname) {
                 '--disable-setuid-sandbox',
             ]
         });;
-    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${nameOfMed}&ad=dirN&o=0`);
+    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
     const page1 = await browser.newPage();
@@ -646,7 +645,7 @@ async function extractDataOfWelnessForever(medname) {
                 '--disable-setuid-sandbox',
             ]
         });;
-    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
+    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`);
     const page1 = await browser.newPage();
     await page1.goto(urlForWelnessForever, { waitUntil: 'networkidle2' });
     var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
@@ -670,7 +669,7 @@ async function extractDataOfWelnessForever(medname) {
         console.log(error);
     }
 }
-async function extractDataOfPracto(urlForPracto) {
+async function extractDataOfPracto(medname) {
     try {
         // Fetching HTML
         const browser= await puppeteer.launch({
@@ -680,8 +679,8 @@ async function extractDataOfPracto(urlForPracto) {
             ]
         });;
 
-        console.log("name->"+nameOfMed)
-    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${nameOfMed}&ad=dirN&o=0`);
+        console.log("name->"+medname)
+    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
     const page2 = await browser.newPage();
@@ -708,86 +707,87 @@ async function extractDataOfPracto(urlForPracto) {
     }
 }
 
+extractSubsfApollo = async (url,final) => {
+    try {
+        // Fetching HTML
+        url=url.split('?')[0];
+        // url="https://apollopharmacy.in"+url;
+        console.log('got it->'+url);
+        const { data } = await axios.get(url)
+        const NameOfSubs=[];
+        const PriceOfSubs=[];
+        const ImgLinkOfSubs=[];
+        // Using cheerio to extract <a> tags
+        const $ = cheerio.load(data);
+        // console.log($.html());
+        const subs=[];
 
+        $('.ProductSubstituteWidget_productTitle__t4qgT').each(function(i, elm) {
+            NameOfSubs.push($(this).text()) // for name 
+        });
+        $('.ProductSubstituteWidget_priceGroup__1crky').each(function(i, elm) {
+            PriceOfSubs.push($(this).text()) // for price 
+        });
+        $('.ProductSubstituteWidget_productIcon__16R4h img').each(function(i, elm) {
+            ImgLinkOfSubs.push($(this).attr('srcset')) // for imgLink 
+        });
+        if(NameOfSubs=='')
+        {
+            console.log('method 2');
+            $('.CommonWidget_productTitle__2FRMY').each(function(i, elm) {
+                NameOfSubs.push($(this).text()) // for name 
+            });
+            $('.CommonWidget_priceGroup__1resK').each(function(i, elm) {
+                PriceOfSubs.push($(this).text()) // for price 
+            });
+            $('.CommonWidget_productIcon__ky-JT img').each(function(i, elm) {
+                ImgLinkOfSubs.push($(this).attr('srcset')) // for imgLink 
+            });
+        }
+        console.log('PRODUCT SUBSTITUTES-.\n');
+        for(var i=0;i<NameOfSubs.length;i++){
+            final.push({
+                subsname:NameOfSubs[i],
+                subsprice:PriceOfSubs[i],
+                subsImgLink:ImgLinkOfSubs[i],
+        })
+        // console.log(final);
+       }
+
+     
+
+    } catch (error) {
+        // res.sendFile(__dirname + '/try.html');
+        // res.sendFile(__dirname + '/error.html');
+        // console.log(error);
+        return error;
+    }
+};
+const final=[];
 app.post('/result', async (req, res) => {
     // Insert Login Code Here
-     final.length = 0;
-    nameOfMed.length = 0;
-    nameOfMed.push(req.body.dataOfMed) + '\n';
+     
+const final = [];
+    var nameOfMed=req.body.foodItem;
     // const city = req.body.city + '\n';
     const linkForSubs=[];
 
 
-    const urlForPharmEasy = `https://in.search.yahoo.com/search;_ylt=?p=site:pharmeasy.in+${nameOfMed}&ad=dirN&o=0`;
-    const urlForNetMeds = `https://in.search.yahoo.com/search;_ylt=?p=site:netmeds.com+${nameOfMed}&ad=dirN&o=0`;
-    const urlForApollo = `https://www.apollopharmacy.in/search-medicines/${nameOfMed}`;
-    const urlForIndiMedo= `https://in.search.yahoo.com/search;_ylt=?p=${nameOfMed}+site:indimedo.com+&ad=dirN&o=0`;
+    const urlForPharmEasy = `https://in.search.yahoo.com/search;_ylt=?p=site:pharmeasy.in+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForNetMeds = `https://in.search.yahoo.com/search;_ylt=?p=site:netmeds.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForApollo = `https://www.apollopharmacy.in/search-medicines/${req.body.foodItem}`;
+    const urlForIndiMedo= `https://in.search.yahoo.com/search;_ylt=?p=${req.body.foodItem}+site:indimedo.com+&ad=dirN&o=0`;
     // const urlForHealthmug = `https://www.healthmug.com/search?keywords=${nameOfMed}`;
-    const urlForTata = `https://in.search.yahoo.com/search;_ylt=?p=site:1mg.com+${nameOfMed}&ad=dirN&o=0`;
-    const urlForOBP = `https://in.search.yahoo.com/search;_ylt=?p=site:tabletshablet.com+${nameOfMed}&ad=dirN&o=0`;
-    const urlFormedplusMart = `https://in.search.yahoo.com/search;_ylt=?p=site:pulseplus.in+${nameOfMed}&ad=dirN&o=0`;
-    const urlForMyUpChar = `https://in.search.yahoo.com/search;_ylt=?p=site:myupchar.com+${nameOfMed}&ad=dirN&o=0`;
+    const urlForTata = `https://in.search.yahoo.com/search;_ylt=?p=site:1mg.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForOBP = `https://in.search.yahoo.com/search;_ylt=?p=site:tabletshablet.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlFormedplusMart = `https://in.search.yahoo.com/search;_ylt=?p=site:pulseplus.in+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForMyUpChar = `https://in.search.yahoo.com/search;_ylt=?p=site:myupchar.com+${req.body.foodItem}&ad=dirN&o=0`;
     // const urlForAd = `https://in.search.yahoo.com/search;_ylt=?p=site:asklaila.com chemist shops in ${city}&ad=dirN&o=0`;
-    const urlForOmChemist = `https://omhealthcart.com/catalogsearch/result/?q=${nameOfMed}`
+    const urlForOmChemist = `https://omhealthcart.com/catalogsearch/result/?q=${req.body.foodItem}`
 
     const item = [];
   
-    extractSubsfApollo = async (url,final) => {
-        try {
-            // Fetching HTML
-            url=url.split('?')[0];
-            // url="https://apollopharmacy.in"+url;
-            console.log('got it->'+url);
-            const { data } = await axios.get(url)
-            const NameOfSubs=[];
-            const PriceOfSubs=[];
-            const ImgLinkOfSubs=[];
-            // Using cheerio to extract <a> tags
-            const $ = cheerio.load(data);
-            // console.log($.html());
-            const subs=[];
-
-            $('.ProductSubstituteWidget_productTitle__t4qgT').each(function(i, elm) {
-                NameOfSubs.push($(this).text()) // for name 
-            });
-            $('.ProductSubstituteWidget_priceGroup__1crky').each(function(i, elm) {
-                PriceOfSubs.push($(this).text()) // for price 
-            });
-            $('.ProductSubstituteWidget_productIcon__16R4h img').each(function(i, elm) {
-                ImgLinkOfSubs.push($(this).attr('srcset')) // for imgLink 
-            });
-            if(NameOfSubs=='')
-            {
-                console.log('method 2');
-                $('.CommonWidget_productTitle__2FRMY').each(function(i, elm) {
-                    NameOfSubs.push($(this).text()) // for name 
-                });
-                $('.CommonWidget_priceGroup__1resK').each(function(i, elm) {
-                    PriceOfSubs.push($(this).text()) // for price 
-                });
-                $('.CommonWidget_productIcon__ky-JT img').each(function(i, elm) {
-                    ImgLinkOfSubs.push($(this).attr('srcset')) // for imgLink 
-                });
-            }
-            console.log('PRODUCT SUBSTITUTES-.\n');
-            for(var i=0;i<NameOfSubs.length;i++){
-                final.push({
-                    subsname:NameOfSubs[i],
-                    subsprice:PriceOfSubs[i],
-                    subsImgLink:ImgLinkOfSubs[i],
-            })
-            // console.log(final);
-           }
-    
-         
-    
-        } catch (error) {
-            // res.sendFile(__dirname + '/try.html');
-            // res.sendFile(__dirname + '/error.html');
-            // console.log(error);
-            return error;
-        }
-    };
+   
 
 
   
@@ -805,6 +805,11 @@ app.post('/result', async (req, res) => {
             item.push(responses[4])
 
             console.log(item);
+           
+         // getData(item);
+            }))
+
+
             await axios.all([extractDataOfNetMeds(item[0]), extractDataOfPharmEasy(item[1]),
             extractDataOfOBP(item[2]), extractDataOfmedplusMart(item[3]), extractDataOfMyUpChar(item[4]),extractDataOfApollo(urlForApollo)])
                 .then(await axios.spread(async (...responses) => {
@@ -820,17 +825,13 @@ app.post('/result', async (req, res) => {
         
                 }))
                 final.sort((a, b) => a.price - b.price); // b - a for reverse sort
-                final.push(nameOfMed);
+                final.push({named:req.body.foodItem});
+                console.log(final)
               
                 console.log('Found Everything Sir!..')
                 res.render('final', { final: final });
 
 
-         // getData(item);
-            }))
-
-
-            
          
 
             // console.log(final[1]);
@@ -845,7 +846,7 @@ app.post('/final', async (req, res) => {
     // Insert Login Code Here
     // Insert Login Code Here
 
-    await axios.all([extractDataOfDhani(nameOfMed[0],extractDataOfPracto(nameOfMed),extractDataOfWelnessForever(nameOfMed),extractDataOfmedplusmartOg(nameOfMed))])
+    await axios.all([extractDataOfDhani("dolo"),extractDataOfPracto("dolo"),extractDataOfWelnessForever("dolo"),extractDataOfmedplusmartOg("dolo")])
         .then(await axios.spread(async (...responses) => {
             // console.log(...responses);
 
@@ -857,8 +858,7 @@ app.post('/final', async (req, res) => {
             // await extractSubsfApollo(final[final.length-1].link,final);
 
         }))
-        
-        final.push(nameOfMed[0]);
+        ;
         // nameOfMed.pop();
     
     res.render('secondFinal', { final: final });
