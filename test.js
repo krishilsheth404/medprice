@@ -552,18 +552,16 @@ async function extractDataOfmedplusmartOg(medname) {
             ]
         });;
     
-        const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${medname}&ad=dirN&o=0`);
-        console.log(urlFormedplusMartOg)
         // await browser.close();
         // console.log(data)
         // await page.close();
         // Using cheerio to extract <a> tags
         const page3 = await browser3.newPage();
-        await page3.goto(urlFormedplusMartOg, { waitUntil: 'networkidle2' });
+        await page3.goto(medname, { waitUntil: 'networkidle2' });
         var data= await page3.evaluate(() => document.querySelector('*').outerHTML); +"";
+        const $ = cheerio.load(data);
         await browser3.close();
 
-        const $ = cheerio.load(data);
         var a = $('.mrp-details-div h2').text().trim();
         if (!a) {
             a = $('.mrp-details-div h3').text().trim();
@@ -604,15 +602,14 @@ async function extractDataOfDhani(medname) {
                 '--disable-setuid-sandbox',
             ]
         });;
-    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
     const page = await browser.newPage();
-    await page.goto(urlForDhani, { waitUntil: 'networkidle2' });
+    await page.goto(medname, { waitUntil: 'networkidle2' });
     var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
+    const $ = cheerio.load(data);
     await browser.close();
     //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
         var a = $('.mrp-details-div h2').text().trim();
         if (!a) {
             a = $('.mrp-details-div h3').text().trim();
@@ -645,13 +642,12 @@ async function extractDataOfWelnessForever(medname) {
                 '--disable-setuid-sandbox',
             ]
         });;
-    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`);
     const page1 = await browser1.newPage();
-    await page1.goto(urlForWelnessForever, { waitUntil: 'networkidle2' });
+    await page1.goto(medname, { waitUntil: 'networkidle2' });
     var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
+    const $ = cheerio.load(data);
     await browser1.close();
     //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
       
         var imgUrl = $('.ngxImageZoomContainer img').attr('src');
         // var url="";
@@ -679,16 +675,14 @@ async function extractDataOfPracto(medname) {
             ]
         });;
 
-        console.log("name->"+medname)
-    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`);
     // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
     
     const page2 = await browser2.newPage();
-    await page2.goto(urlForPracto, { waitUntil: 'networkidle2' });
+    await page2.goto(medname, { waitUntil: 'networkidle2' });
     var data= await page2.evaluate(() => document.querySelector('*').outerHTML); +"";
+    const $ = cheerio.load(data);
     await browser2.close();
     //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
       
         var imgUrl = $('.image-carousel--image_wrapper img').attr('src');
         // var url="";
@@ -845,6 +839,49 @@ const final = [];
 app.post('/final', async (req, res) => {
     // Insert Login Code Here
     // Insert Login Code Here
+
+    const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${medname}&ad=dirN&o=0`);
+    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${medname}&ad=dirN&o=0`);
+    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${medname}&ad=dirN&o=0`);
+    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${medname}&ad=dirN&o=0`);
+   
+
+
+    const item = [];
+  
+   
+
+
+  
+
+            
+    await axios.all([extractLinkFromyahoo(urlFormedplusMartOg), extractLinkFromyahoo(urlForDhani),extractLinkFromyahoo(urlForWelnessForever), 
+        extractLinkFromyahoo(urlForPracto)])
+        .then(await axios.spread(async (...responses) => {
+            // console.log(...responses);
+
+            item.push(responses[0])
+            item.push(responses[1])
+            item.push(responses[2])
+            item.push(responses[3])
+
+            console.log(item);
+           
+         // getData(item);
+            }))
+
+
+            await axios.all([extractDataOfmedplusmartOg(item[0]), extractDataOfDhani(item[1]),
+            extractDataOfWelnessForever(item[2]), extractDataOfPracto(item[3])])
+                .then(await axios.spread(async (...responses) => {
+                    // console.log(...responses);
+        
+                    final.push(responses[0])
+                    final.push(responses[1])
+                    final.push(responses[2])
+                    final.push(responses[3])
+        
+                }))
 
     await axios.all([extractDataOfDhani("dolo"),extractDataOfPracto("dolo"),extractDataOfWelnessForever("dolo"),extractDataOfmedplusmartOg("dolo")])
         .then(await axios.spread(async (...responses) => {
