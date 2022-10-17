@@ -157,6 +157,35 @@ extractLinkFromyahoo = async (url) => {
     }
 };
 
+extractLinkFrombing = async (url) => {
+    try {
+        // Fetching HTML
+        const { data } = await axios.get(url)
+        // console.log(data)
+
+        // Using cheerio to extract <a> tags
+        const $ = cheerio.load(data);
+        // console.log($.html());
+
+        rawUrl = $('.b_title h2 a').first().attr('href');
+        console.log(rawUrl);
+        if (rawUrl != undefined) {
+            return rawUrl
+        } else {
+            return '';
+        }
+        // url = rawUrl.split("/url?q=")[1].split("&")[0];
+        // console.log('Extracting url: ', url);
+
+
+    } catch (error) {
+        // res.sendFile(__dirname + '/try.html');
+        // res.sendFile(__dirname + '/error.html');
+        console.log(error);
+        return 0;
+    }
+};
+
 extractDataOfPharmEasy = async (url) => {
     try {
         // Fetching HTML
@@ -683,18 +712,17 @@ app.post('/final', async (req, res) => {
     var med=req.body.foodItem;
     console.log(med);
     // med=med.toString();
-    const urlFormedplusMartOg =`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${req.body.foodItem}&ad=dirN&o=0`;
-    console.log(urlFormedplusMartOg);
-    const urlForDhani = `https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${req.body.foodItem}&ad=dirN&o=0`;
-    console.log(urlForDhani);
-    const urlForWelnessForever = `https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${req.body.foodItem}&ad=dirN&o=0`;
-    const urlForPracto =`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlFormedplusMartOg =`https://www.bing.com/search?q=site:medplusmart.com+${req.body.foodItem}&ad=dirN&o=0`;
+    // https://www.bing.com/search?q=site%3Apracto.com+dolo+650+tablet
+    const urlForDhani = `https://www.bing.com/search?q=site:dhani.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForWelnessForever = `https://www.bing.com/search?q=${req.body.foodItem}+site:wellnessforever.com&ad=dirN&o=0`;
+    const urlForPracto =`https://www.bing.com/search?q=site:practo.com+${req.body.foodItem}&ad=dirN&o=0`;
    
     const browser = await puppeteer.launch({
         args : [ 
            '--no-sandbox',
            '--disable-setuid-sandbox',
-        ]
+        ], headless:false
     });;
 
     
@@ -710,33 +738,44 @@ async function extractDataOfmedplusmartOg(medname) {
         // Using cheerio to extract <a> tags
         const page = await browser.newPage();
         await page.goto(medname, { waitUntil: 'networkidle2' });
-        var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
-        const $ = cheerio.load(data);
-        await page.close();
-     
-        var a = $('.mrp-details-div h2').text().trim();
-        if (!a) {
-            a = $('.mrp-details-div h3').text().trim();
+        var {data}= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
+        
+        // await page.close();
+        let a=await page.waitForSelector('.mrp-details-div h2');
+        a=await page.evaluate(el => el.textContent, a);
+        if(!a){
+            let a=await page.waitForSelector('.mrp-details-div h3');
+            a=await page.evaluate(el => el.textContent, a);
         }
         if(a.includes('₹')){
             a=a.split('₹')[1];
         }
-        // a=a.split('MRP')[1].trim();//price
+    //   console.log(name);
+    
+     let itemVal=await page.waitForSelector('.composition-details h1');
+     itemVal=await page.evaluate(el => el.textContent, itemVal);
 
-        var imgUrl = $('.zoomWindowContainer div').attr('style');
-        if(imgUrl){
-        if(imgUrl.includes('url("')){
-            imgUrl = imgUrl.split('url("')[1];
-        }
-        if(imgUrl.includes('")')){
-            imgUrl = imgUrl.split('")')[0];
-        }
-    }
+
+
+        // const n = await page.$(".product-div .product-img")
+        // const Pageurl = await (await n.getProperty('src')).jsonValue()
+        
+     
+       
+        // var imgUrl = $('.zoomWindowContainer div').attr('style');
+        // if(imgUrl){
+        // if(imgUrl.includes('url("')){
+        //     imgUrl = imgUrl.split('url("')[1];
+        // }
+        // if(imgUrl.includes('")')){
+        //     imgUrl = imgUrl.split('")')[0];
+        // }
+    
         return {
             name: 'MedPlusMart',
-            item: $('.composition-details h1').text().trim(),
+            item:itemVal,
             price: a,
-            imgLink: imgUrl,
+            imgLink: '',
             link: '',
         }
 
@@ -753,9 +792,9 @@ async function extractDataOfDhani(medname) {
     
     const page = await browser.newPage();
     await page.goto(medname, { waitUntil: 'networkidle2' });
-    var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
+    var {data}= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
     const $ = cheerio.load(data);
-    await page.close();
+    // await page.close();
     //    console.log(typeof(final.datafordhani));
         var a = $('.mrp-details-div h2').text().trim();
         if (!a) {
@@ -786,9 +825,9 @@ async function extractDataOfWelnessForever(medname) {
      
     const page = await browser.newPage();
     await page.goto(medname, { waitUntil: 'networkidle2' });
-    var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
+    var {data}= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
     const $ = cheerio.load(data);
-    await page.close();
+    // await page.close();
     //    console.log(typeof(final.datafordhani));
       
         var imgUrl = $('.ngxImageZoomContainer img').attr('src');
@@ -815,9 +854,9 @@ async function extractDataOfPracto(medname) {
     
     const page = await browser.newPage();
     await page.goto(medname, { waitUntil: 'networkidle2' });
-    var data= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
+    var {data}= await page.evaluate(() => document.querySelector('*').outerHTML); +"";
     const $ = cheerio.load(data);
-    await page.close();
+    // await page.close();
     //    console.log(typeof(final.datafordhani));
       
         var imgUrl = $('.image-carousel--image_wrapper img').attr('src');
@@ -839,24 +878,14 @@ async function extractDataOfPracto(medname) {
 
     const item = [];
             
-    await axios.all([extractLinkFromyahoo(urlFormedplusMartOg), extractLinkFromyahoo(urlForDhani),extractLinkFromyahoo(urlForWelnessForever), 
-        extractLinkFromyahoo(urlForPracto)])
-        .then(await axios.spread(async (...responses) => {
-            console.log(...responses);
+    
+             item.push(await extractLinkFrombing(urlFormedplusMartOg))
+             item.push(await extractLinkFrombing(urlForDhani))
+             item.push(await extractLinkFrombing(urlForWelnessForever))
+             item.push(await extractLinkFrombing(urlForPracto))
+            
 
-             item.push(await responses[0])
-            item.push(await responses[1])
-            item.push(await responses[2])
-            item.push(await responses[3])
-
-            console.log(item);
-           
-         // getData(item);
-            }))
-
-
-            await axios.all([extractDataOfmedplusmartOg(item[0]), extractDataOfDhani(item[1]),
-            extractDataOfWelnessForever(item[2]), extractDataOfPracto(item[3])])
+            await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfDhani(item[1]),extractDataOfWelnessForever(item[2]),extractDataOfPracto(item[3])])
                 .then(await axios.spread(async (...responses) => {
                     // console.log(...responses);
         
@@ -872,7 +901,6 @@ async function extractDataOfPracto(medname) {
                 console.log(final)
               
                 console.log('Found Everything Sir!..')
-                await browser.close();
 
     res.render('secondFinal', { final: final });
 
