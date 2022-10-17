@@ -878,10 +878,21 @@ async function extractDataOfPracto(medname) {
     const item = [];
             
     
-             item.push(await extractLinkFromyahoo(urlFormedplusMartOg))
-             item.push(await extractLinkFromyahoo(urlForDhani))
-             item.push(await extractLinkFromyahoo(urlForWelnessForever))
-             item.push(await extractLinkFromyahoo(urlForPracto))
+
+             await axios.all([extractLinkFromyahoo(urlFormedplusMartOg), extractLinkFromyahoo(urlForDhani),extractLinkFromyahoo(urlForWelnessForever), 
+                extractLinkFromyahoo(urlForPracto)])
+                .then(await axios.spread(async (...responses) => {
+                    // console.log(...responses);
+        
+                    item.push(responses[0])
+                    item.push(responses[1])
+                    item.push(responses[2])
+                    item.push(responses[3])
+        
+                    console.log(item);
+                   
+                 // getData(item);
+                    }))
             
 
             await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfPracto(item[3])])
