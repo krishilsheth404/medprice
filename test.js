@@ -712,11 +712,10 @@ app.post('/final', async (req, res) => {
     var med=req.body.foodItem;
     console.log(med);
     // med=med.toString();
-    const urlFormedplusMartOg =`https://www.bing.com/search?q=site:medplusmart.com+${req.body.foodItem}&ad=dirN&o=0`;
-    // https://www.bing.com/search?q=site%3Apracto.com+dolo+650+tablet
-    const urlForDhani = `https://www.bing.com/search?q=site:dhani.com+${req.body.foodItem}&ad=dirN&o=0`;
-    const urlForWelnessForever = `https://www.bing.com/search?q=${req.body.foodItem}+site:wellnessforever.com&ad=dirN&o=0`;
-    const urlForPracto =`https://www.bing.com/search?q=site:practo.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlFormedplusMartOg =`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForDhani = `https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${req.body.foodItem}&ad=dirN&o=0`;
+    const urlForWelnessForever = `https://in.search.yahoo.com/search;_ylt=?p=${req.body.foodItem}+site:wellnessforever.com&ad=dirN&o=0`;
+    const urlForPracto =`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${req.body.foodItem}&ad=dirN&o=0`;
    
     const browser = await puppeteer.launch({
         args : [ 
@@ -879,20 +878,18 @@ async function extractDataOfPracto(medname) {
     const item = [];
             
     
-             item.push(await extractLinkFrombing(urlFormedplusMartOg))
-             item.push(await extractLinkFrombing(urlForDhani))
-             item.push(await extractLinkFrombing(urlForWelnessForever))
-             item.push(await extractLinkFrombing(urlForPracto))
+             item.push(await extractLinkFromyahoo(urlFormedplusMartOg))
+             item.push(await extractLinkFromyahoo(urlForDhani))
+             item.push(await extractLinkFromyahoo(urlForWelnessForever))
+             item.push(await extractLinkFromyahoo(urlForPracto))
             
 
-            await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfDhani(item[1]),extractDataOfWelnessForever(item[2]),extractDataOfPracto(item[3])])
+            await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfDhani(item[1])])
                 .then(await axios.spread(async (...responses) => {
                     // console.log(...responses);
         
                     final.push(responses[0])
                     final.push(responses[1])
-                    final.push(responses[2])
-                    final.push(responses[3])
         
                 }))
 
@@ -903,7 +900,6 @@ async function extractDataOfPracto(medname) {
                 console.log('Found Everything Sir!..')
 
                 await browser.close();
-
     res.render('secondFinal', { final: final });
 
 })
