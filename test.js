@@ -884,7 +884,7 @@ async function extractDataOfPracto(medname) {
              item.push(await extractLinkFromyahoo(urlForPracto))
             
 
-            await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfDhani(item[1])])
+            await Promise.all([extractDataOfmedplusmartOg(item[0]),extractDataOfPracto(item[3])])
                 .then(await axios.spread(async (...responses) => {
                     // console.log(...responses);
         
