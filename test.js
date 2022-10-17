@@ -722,7 +722,7 @@ app.post('/final', async (req, res) => {
         args : [ 
            '--no-sandbox',
            '--disable-setuid-sandbox',
-        ], headless:false
+        ]
     });;
 
     
@@ -901,6 +901,8 @@ async function extractDataOfPracto(medname) {
                 console.log(final)
               
                 console.log('Found Everything Sir!..')
+
+                await browser.close();
 
     res.render('secondFinal', { final: final });
 
