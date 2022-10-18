@@ -571,6 +571,7 @@ async function extractDataOfmedplusmartOg(medname) {
         if(a.includes('₹')){
             a=a.split('₹')[1];
         }
+        console.log('value of medplus'+a);
         // a=a.split('MRP')[1].trim();//price
 
         var imgUrl = $('.zoomWindowContainer div').attr('style');
@@ -848,14 +849,13 @@ app.post('/final', async (req, res) => {
     // Insert Login Code Here
 
     console.log(nameOfMed[0])
-    await axios.all([extractDataOfDhani(nameOfMed[0]),extractDataOfPracto(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
+    await axios.all([extractDataOfPracto(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
         .then(await axios.spread(async (...responses) => {
             // console.log(...responses);
 
             final.push(responses[0])
             final.push(responses[1])
             final.push(responses[2])
-            final.push(responses[3])
            
             // await extractSubsfApollo(final[final.length-1].link,final);
 
