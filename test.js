@@ -540,181 +540,14 @@ extractDataOfIndiMedo = async (url) => {
 const nameOfMed = [], final = [];
 
 
-async function extractDataOfmedplusmartOg(medname) {
-    try {
-        // Fetching HTML
-        console.log('url:'+nameOfMed);
-      
-        const browser= await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ]
-        });;
-    
-        const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${nameOfMed}&ad=dirN&o=0`);
-        console.log(urlFormedplusMartOg)
-        // await browser.close();
-        // console.log(data)
-        // await page.close();
-        // Using cheerio to extract <a> tags
-        const page1 = await browser.newPage();
-        await page1.goto(urlFormedplusMartOg, { waitUntil: 'networkidle2' });
-        var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
-        await browser.close();
 
-        const $ = cheerio.load(data);
-        var a = $('.mrp-details-div h2').text().trim();
-        if (!a) {
-            a = $('.mrp-details-div h3').text().trim();
-        }
-        if(a.includes('₹')){
-            a=a.split('₹')[1];
-        }
-        console.log('value of medplus'+a);
-        // a=a.split('MRP')[1].trim();//price
-
-        var imgUrl = $('.zoomWindowContainer div').attr('style');
-        if(imgUrl){
-        if(imgUrl.includes('url("')){
-            imgUrl = imgUrl.split('url("')[1];
-        }
-        if(imgUrl.includes('")')){
-            imgUrl = imgUrl.split('")')[0];
-        }
-    }
-        var url="";
-        return {
-            name: 'MedPlusMart',
-            item: $('.composition-details h1').text().trim(),
-            price: a,
-            imgLink: imgUrl,
-            link: urlFormedplusMartOg,
-        }
-
-    } catch (error) {
-        // res.sendFile(__dirname + '/try.html');
-        console.log(error);
-    }
-}
-async function extractDataOfDhani(medname) {
-    try {
-        // Fetching HTML
-        const browser= await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ]
-        });;
-    const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${nameOfMed}&ad=dirN&o=0`);
-    // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
-    
-    const page1 = await browser.newPage();
-    await page1.goto(urlForDhani, { waitUntil: 'networkidle2' });
-    var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser.close();
-    //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
-        var a = $('.mrp-details-div h2').text().trim();
-        if (!a) {
-            a = $('.mrp-details-div h3').text().trim();
-        }
-        // a=a.split('MRP')[1].trim();//price
-
-        var imgUrl = $('.img-section img').attr('src');
-        var url="";
-        
-        return {
-            name: 'Dhani Pharmacy',
-            item: $('.product-name ').text().trim(),
-            price: $('.price-area-txt--existing').text(),
-            imgLink: imgUrl,
-            link: urlForDhani,
-        }
-
-    } catch (error) {
-        // res.sendFile(__dirname + '/try.html');
-        console.log(error);
-    }
-
-}
-async function extractDataOfWelnessForever(medname) {
-    try {
-        // Fetching HTML
-        const browser= await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ]
-        });;
-    const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
-    const page1 = await browser.newPage();
-    await page1.goto(urlForWelnessForever, { waitUntil: 'networkidle2' });
-    var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser.close();
-    //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
-      
-        var imgUrl = $('.ngxImageZoomContainer img').attr('src');
-        // var url="";
-        
-        return {
-            name: 'Wellness Forever',
-            item: $('.prdName').text().trim(),
-            price: $('.infoPrice').text(),
-            imgLink: imgUrl,
-            link: urlForWelnessForever,
-        }
-
-    } catch (error) {
-        // res.sendFile(__dirname + '/try.html');
-        console.log(error);
-    }
-}
-async function extractDataOfPracto(urlForPracto) {
-    try {
-        // Fetching HTML
-        const browser= await puppeteer.launch({
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ]
-        });;
-
-        console.log("name->"+nameOfMed)
-    const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${nameOfMed}&ad=dirN&o=0`);
-    // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
-    
-    const page2 = await browser.newPage();
-    await page2.goto(urlForPracto, { waitUntil: 'networkidle2' });
-    var data= await page2.evaluate(() => document.querySelector('*').outerHTML); +"";
-    await browser.close();
-    //    console.log(typeof(final.datafordhani));
-        const $ = cheerio.load(data);
-      
-        var imgUrl = $('.image-carousel--image_wrapper img').attr('src');
-        // var url="";
-        
-        return {
-            name: 'Practo',
-            item: $('.heading-alpha').text().trim(),
-            price: $('.heading-beta-bold').text(),
-            imgLink: imgUrl,
-            link: urlForPracto,
-        }
-
-    } catch (error) {
-        // res.sendFile(__dirname + '/try.html');
-        console.log(error);
-    }
-}
 
 
 app.post('/result', async (req, res) => {
     // Insert Login Code Here
      final.length = 0;
     nameOfMed.length = 0;
-    nameOfMed.push(req.body.foodItem) + '\n';
+    nameOfMed.push(req.body.finalmed) + '\n';
     console.log('first name->'+nameOfMed[0]);
     // const city = req.body.city + '\n';
     const linkForSubs=[];
@@ -823,6 +656,7 @@ app.post('/result', async (req, res) => {
         
                 }))
                 final.sort((a, b) => a.price - b.price); // b - a for reverse sort
+
                 final.push(nameOfMed[0]);
               
                 console.log('Found Everything Sir!..')
@@ -848,8 +682,168 @@ app.post('/final', async (req, res) => {
     // Insert Login Code Here
     // Insert Login Code Here
 
-    console.log(nameOfMed[0])
-    await axios.all([extractDataOfPracto(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
+    const browser= await puppeteer.launch({
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ]
+    });;
+
+    async function extractDataOfmedplusmartOg(medname) {
+        try {
+            // Fetching HTML
+            console.log('url:'+nameOfMed);
+          
+         
+        
+            const urlFormedplusMartOg = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:medplusmart.com+${nameOfMed}&ad=dirN&o=0`);
+            console.log(urlFormedplusMartOg)
+            // await browser.close();
+            // console.log(data)
+            // await page.close();
+            // Using cheerio to extract <a> tags
+            const page1 = await browser.newPage();
+            await page1.goto(urlFormedplusMartOg, { waitUntil: 'networkidle2' });
+            var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
+            // await browser.close();
+    
+            const $ = cheerio.load(data);
+            var a = $('.mrp-details-div h2').text().trim();
+            if (!a) {
+                a = $('.mrp-details-div h3').text().trim();
+            }
+            if(a.includes('₹')){
+                a=a.split('₹')[1];
+            }
+            console.log('value of medplus'+a);
+            // a=a.split('MRP')[1].trim();//price
+    
+            var imgUrl = $('.zoomWindowContainer div').attr('style');
+            if(imgUrl){
+            if(imgUrl.includes('url("')){
+                imgUrl = imgUrl.split('url("')[1];
+            }
+            if(imgUrl.includes('")')){
+                imgUrl = imgUrl.split('")')[0];
+            }
+        }
+            var url="";
+            return {
+                name: 'MedPlusMart',
+                item: $('.composition-details h1').text().trim(),
+                price: a,
+                imgLink: imgUrl,
+                link: urlFormedplusMartOg,
+            }
+    
+        } catch (error) {
+            // res.sendFile(__dirname + '/try.html');
+            console.log(error);
+        }
+    }
+    async function extractDataOfDhani(medname) {
+        try {
+            // Fetching HTML
+         
+        const urlForDhani = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:dhani.com+${nameOfMed}&ad=dirN&o=0`);
+        // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
+        
+        const page1 = await browser.newPage();
+        await page1.goto(urlForDhani, { waitUntil: 'networkidle2' });
+        var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
+        // await browser.close();
+        //    console.log(typeof(final.datafordhani));
+            const $ = cheerio.load(data);
+            // var a = $('.product-name').text().trim();
+          
+            // a=a.split('MRP')[1].trim();//price
+    
+            var imgUrl = $('.img-section img').attr('src');
+            var url="";
+            
+            return {
+                name: 'Dhani Pharmacy',
+                item: $('.product-name').text().trim(),
+                price: $('.price-area-txt--existing').first().text(),
+                imgLink: imgUrl,
+                link: urlForDhani,
+            }
+    
+        } catch (error) {
+            // res.sendFile(__dirname + '/try.html');
+            console.log(error);
+        }
+    
+    }
+    async function extractDataOfWelnessForever(medname) {
+        try {
+            // Fetching HTML
+         
+        const urlForWelnessForever = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
+        const page1 = await browser.newPage();
+        await page1.goto(urlForWelnessForever, { waitUntil: 'networkidle2' });
+        var data= await page1.evaluate(() => document.querySelector('*').outerHTML); +"";
+        // await browser.close();
+        //    console.log(typeof(final.datafordhani));
+            const $ = cheerio.load(data);
+          
+            var imgUrl = $('.ngxImageZoomContainer img').attr('src');
+            var price=$('.infoPrice').text();
+            if(price.includes('Rs')){
+                price=price.split('Rs')[1];
+            }
+            // var url="";
+            
+            return {
+                name: 'Wellness Forever',
+                item: $('.prdName').text().trim(),
+                price: price,
+                imgLink: imgUrl,
+                link: urlForWelnessForever,
+            }
+    
+        } catch (error) {
+            // res.sendFile(__dirname + '/try.html');
+            console.log(error);
+        }
+    }
+    async function extractDataOfPracto(urlForPracto) {
+        try {
+            // Fetching HTML
+         
+    
+            console.log("name->"+nameOfMed)
+        const urlForPracto = await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:practo.com+${nameOfMed}&ad=dirN&o=0`);
+        // await extractLinkFromyahoo(`https://in.search.yahoo.com/search;_ylt=?p=site:wellnessforever.com+${nameOfMed}&ad=dirN&o=0`);
+        
+        const page2 = await browser.newPage();
+        await page2.goto(urlForPracto, { waitUntil: 'networkidle2' });
+        var data= await page2.evaluate(() => document.querySelector('*').outerHTML); +"";
+        // await browser.close();
+        //    console.log(typeof(final.datafordhani));
+            const $ = cheerio.load(data);
+            console.log($.html());
+          
+            var imgUrl = $('.image-carousel--image_wrapper img').attr('src');
+            // var url="";
+            
+            return {
+                name: 'Practo',
+                item: $('.heading-alpha').text().trim(),
+                price: $('.heading-beta-bold').text(),
+                imgLink: imgUrl,
+                link: urlForPracto,
+            }
+    
+        } catch (error) {
+            // res.sendFile(__dirname + '/try.html');
+            console.log(error);
+        }
+    }
+
+
+    console.log('name of med =>' + nameOfMed[0])
+    await axios.all([extractDataOfDhani(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
         .then(await axios.spread(async (...responses) => {
             // console.log(...responses);
 
@@ -860,7 +854,9 @@ app.post('/final', async (req, res) => {
             // await extractSubsfApollo(final[final.length-1].link,final);
 
         }))
-        
+    
+        await browser.close();
+        final.sort((a, b) => a.name - b.name); // b - a for reverse sort
         final.push(nameOfMed[0]);
         // nameOfMed.pop();
     
