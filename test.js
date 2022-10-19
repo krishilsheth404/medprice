@@ -629,7 +629,7 @@ app.post('/result', async (req, res) => {
   
 
             
-    await axios.all([extractLinkFromyahoo(urlForNetMeds), extractLinkFromyahoo(urlForPharmEasy),extractLinkFromyahoo(urlForOBP), 
+    await Promise.all([extractLinkFromyahoo(urlForNetMeds), extractLinkFromyahoo(urlForPharmEasy),extractLinkFromyahoo(urlForOBP), 
         extractLinkFromyahoo(urlFormedplusMart), extractLinkFromyahoo(urlForMyUpChar)])
         .then(await axios.spread(async (...responses) => {
             // console.log(...responses);
@@ -641,7 +641,7 @@ app.post('/result', async (req, res) => {
             item.push(responses[4])
 
             console.log(item);
-            await axios.all([extractDataOfNetMeds(item[0]), extractDataOfPharmEasy(item[1]),
+            await Promise.all([extractDataOfNetMeds(item[0]), extractDataOfPharmEasy(item[1]),
             extractDataOfOBP(item[2]), extractDataOfmedplusMart(item[3]), extractDataOfMyUpChar(item[4]),extractDataOfApollo(urlForApollo)])
                 .then(await axios.spread(async (...responses) => {
                     // console.log(...responses);
@@ -843,7 +843,7 @@ app.post('/final', async (req, res) => {
 
 
     console.log('name of med =>' + nameOfMed[0])
-    await axios.all([extractDataOfDhani(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
+    await Promise.all([extractDataOfDhani(nameOfMed[0]),extractDataOfWelnessForever(nameOfMed[0]),extractDataOfmedplusmartOg(nameOfMed[0])])
         .then(await axios.spread(async (...responses) => {
             // console.log(...responses);
 
